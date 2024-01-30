@@ -1,0 +1,46 @@
+{
+  "project_info": {
+    "project_number": "792602781807",
+    "project_id": "nawabs-app",
+    "storage_bucket": "nawabs-app.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:792602781807:android:374ad199760325f2b3859a",
+        "android_client_info": {
+          "package_name": "com.example.nawaqs"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "792602781807-9n6ra7gvoj0gbsevltvfeanbeug2anv4.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA2GdpK8UKEPlVABTyAoOhmpr5Ky_znqyo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "792602781807-9n6ra7gvoj0gbsevltvfeanbeug2anv4.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "792602781807-oth3v7gu1okbnqt5ufbbne8rh89ibj5g.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.nawaqs"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
