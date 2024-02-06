@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:nawaqs/Models/item.dart';
 
@@ -7,11 +9,11 @@ class Classification {
 
   Classification({this.name, this.classificationRef});
 
-  CollectionReference ref =
+  final CollectionReference _ref =
       FirebaseFirestore.instance.collection('classifications');
 
   Future<List<Classification>> getClassifications() async {
-    QuerySnapshot classificationsSnap = await ref.get();
+    QuerySnapshot classificationsSnap = await _ref.get();
 
     List<QueryDocumentSnapshot> classificationsDocs = classificationsSnap.docs;
 
@@ -27,8 +29,11 @@ class Classification {
   }
 
   Future<Classification> find(DocumentReference classificationId) async {
-    DocumentSnapshot _classDoc = await classificationId.get();
-    return Classification(name: _classDoc.get('name'));
+    DocumentSnapshot classDoc = await classificationId.get();
+    return Classification(
+      name: classDoc.get('name'),
+      classificationRef: classificationId,
+    );
   }
 
   Future<List<Item>> items() async {
@@ -37,14 +42,19 @@ class Classification {
 
     QuerySnapshot itemsSnap = await itemsRef
         .where('classification', isEqualTo: classificationRef)
+        .where('deleted', isEqualTo: false)
         .get();
 
     List<Item> items = List<Item>.empty(growable: true);
 
     for (QueryDocumentSnapshot item in itemsSnap.docs) {
-      items.add(Item(
+      items.add(
+        Item(
+          itemRef: item.reference,
           name: item.get('name'),
-          classificationDoc: item.get('classification')));
+          classificationDoc: item.get('classification'),
+        ),
+      );
     }
     return items;
   }
@@ -55,11 +65,12 @@ class Classification {
         'classification': classificationRef,
         'name': name,
         'create_date': DateTime.now(),
+        'deleted': false,
       });
 
       return true;
     } catch (e) {
-      print(e);
+      log(e.toString());
       return false;
     }
   }
@@ -72,7 +83,7 @@ class Classification {
       });
       return true;
     } catch (e) {
-      print(e);
+      log(e.toString());
       return false;
     }
   }
@@ -85,7 +96,7 @@ class Classification {
       await classificationRef?.delete();
       return true;
     } catch (e) {
-      print(e);
+      log(e.toString());
       return false;
     }
   }

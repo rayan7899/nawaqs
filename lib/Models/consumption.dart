@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:nawaqs/Models/item.dart';
@@ -43,28 +45,27 @@ class Consumption {
         doneAt: consumption.get('doneAt')?.toDate(),
       ));
     }
-
     return consumptions;
   }
 
   Future<bool> makeDone() async {
-    final batch = FirebaseFirestore.instance.batch();
-    batch.set(consumptionRef!, {'done': true, 'doneAt': Timestamp.now()},
-        SetOptions(merge: true));
-    return batch.commit().then((value) => true).onError((error, stackTrace) {
-      print('----------------- $error');
-      return false;
-    });
+    return consumptionRef!
+        .set({'done': true, 'doneAt': Timestamp.now()}, SetOptions(merge: true))
+        .then((value) => true)
+        .onError((error, stackTrace) {
+          log(error.toString(), stackTrace: StackTrace.current);
+          return false;
+        });
   }
 
   Future<bool> undone() async {
-    final batch = FirebaseFirestore.instance.batch();
-    batch.set(consumptionRef!, {'done': false, 'doneAt': null},
-        SetOptions(merge: true));
-    return batch.commit().then((value) => true).onError((error, stackTrace) {
-      print('----------------- $error');
-      return false;
-    });
+    return consumptionRef!
+        .set({'done': false, 'doneAt': null}, SetOptions(merge: true))
+        .then((value) => true)
+        .onError((error, stackTrace) {
+          log(error.toString(), stackTrace: stackTrace);
+          return false;
+        });
   }
 
   Future<bool> increaseQuantity() async {
