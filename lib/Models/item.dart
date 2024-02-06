@@ -14,10 +14,16 @@ class Item {
   Future<List<Item>> getItems({DocumentReference? classificationRef}) async {
     late QuerySnapshot itemsSnap;
     if (classificationRef == null) {
-      itemsSnap = await ref.get();
+      itemsSnap = await ref
+          .where('deleted', isEqualTo: false)
+          .orderBy('classification')
+          .get();
     } else {
-      itemsSnap =
-          await ref.where('classification', isEqualTo: classificationRef).get();
+      itemsSnap = await ref
+          .where('classification', isEqualTo: classificationRef)
+          .where('deleted', isEqualTo: false)
+          .orderBy('classification')
+          .get();
     }
 
     List<QueryDocumentSnapshot> itemsDocs = itemsSnap.docs;
@@ -43,7 +49,11 @@ class Item {
     final DocumentReference userDocumentReference = FirebaseFirestore.instance
         .collection('users')
         .doc(FirebaseAuth.instance.currentUser?.uid.toString());
-
+    QuerySnapshot oldConsumption = await userDocumentReference
+        .collection('neededItems')
+        .where('item', isEqualTo: itemRef)
+        .where('done', isEqualTo: false)
+        .get();
     final consumptionRef =
         await userDocumentReference.collection('neededItems').add({
       'item': itemRef,

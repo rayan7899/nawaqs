@@ -24,8 +24,11 @@ class Consumption {
   });
 
   Future<List<Consumption>> neededItems() async {
-    QuerySnapshot querySnapshot =
-        await _userDocumentReference.collection('neededItems').get();
+    QuerySnapshot querySnapshot = await _userDocumentReference
+        .collection('neededItems')
+        .orderBy('doneAt')
+        .orderBy('addedAt', descending: true)
+        .get();
     List<Consumption> consumptions = List<Consumption>.empty(growable: true);
 
     for (QueryDocumentSnapshot consumption in querySnapshot.docs) {
