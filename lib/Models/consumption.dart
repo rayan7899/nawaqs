@@ -3,6 +3,8 @@ import 'dart:developer';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:nawaqs/Models/item.dart';
+import 'package:collection/collection.dart';
+import 'package:intl/intl.dart';
 
 // this model show item usage
 class Consumption {
@@ -25,9 +27,16 @@ class Consumption {
     this.consumptionRef,
   });
 
-  Future<List<Consumption>> neededItems() async {
+  Future<List<Consumption>>? neededItems() async {
     QuerySnapshot querySnapshot = await _userDocumentReference
         .collection('neededItems')
+        .where(
+          Filter.or(
+              Filter('done', isEqualTo: false),
+              Filter('doneAt',
+                  isGreaterThan:
+                      DateTime.now().subtract(const Duration(days: 1)))),
+        )
         .orderBy('doneAt')
         .orderBy('addedAt', descending: true)
         .get();
@@ -90,6 +99,37 @@ class Consumption {
       print(e);
       return false;
     }
+  }
+
+  Future<Map<String, List>>? itemsGroupByDay() async {
+    QuerySnapshot itemsSnap = await _userDocumentReference
+        .collection('neededItems')
+        .where('done', isEqualTo: true)
+        .get();
+
+    Map<String, List> groupedItemsByDay = groupBy(itemsSnap.docs,
+        (item) => DateFormat('yyyy-MM-dd').format(item.get('doneAt').toDate()));
+
+    groupedItemsByDay = groupedItemsByDay.map<String, List>((key, value) {
+      var listOfItems = value.map((consumption) async {
+        DocumentSnapshot item = await consumption.get('item').get();
+
+        return Consumption(
+          consumptionRef: consumption.reference,
+          done: consumption.get('done'),
+          doneAt: consumption.get('doneAt').toDate(),
+          quantity: consumption.get('quantity'),
+          item: Item(
+            name: item.get('name'),
+            itemRef: item.reference,
+            classificationDoc: item.get('classification'),
+          ),
+        );
+      });
+
+      return MapEntry(key, listOfItems.toList());
+    });
+    return groupedItemsByDay;
   }
 
   Map<String, dynamic> toMap() {

@@ -5,13 +5,13 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:nawaqs/Models/classification.dart';
 
 class Item {
+  final CollectionReference ref =
+      FirebaseFirestore.instance.collection('items');
   final DocumentReference? itemRef;
   String? name;
   DocumentReference? classificationDoc;
 
   Item({this.name, this.classificationDoc, this.itemRef});
-
-  CollectionReference ref = FirebaseFirestore.instance.collection('items');
 
   Future<List<Item>> getItems({DocumentReference? classificationRef}) async {
     late QuerySnapshot itemsSnap;
@@ -42,9 +42,9 @@ class Item {
   }
 
   Future<Classification> classification() async {
-    DocumentSnapshot _classDoc = await classificationDoc!.get();
+    DocumentSnapshot classDoc = await classificationDoc!.get();
     return Classification(
-        name: _classDoc.get('name'), classificationRef: _classDoc.reference);
+        name: classDoc.get('name'), classificationRef: classDoc.reference);
   }
 
   Future<DocumentReference> makeConsumption() async {

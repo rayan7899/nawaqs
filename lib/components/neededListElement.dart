@@ -30,6 +30,19 @@ class _NeededListElementState extends State<NeededListElement> {
       child: ListTile(
         title: Text('${widget.item.item?.name}'),
         subtitle: Text('الكمية: ${widget.item.quantity}'),
+        enabled: widget.item.done == false,
+        onTap: () {
+          widget.callback.call();
+          setState(() {
+            if (widget.item.done == true) {
+              widget.item.undone();
+              widget.item.done = false;
+            } else {
+              widget.item.makeDone();
+              widget.item.done = true;
+            }
+          });
+        },
         trailing: IconButton(
           onPressed: () {
             widget.callback.call();

@@ -1,9 +1,8 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:nawaqs/Models/consumption.dart';
 import 'package:nawaqs/components/neededListElement.dart';
 import 'package:nawaqs/views/allItems.dart';
+import 'package:nawaqs/views/history.dart';
 
 class NeededList extends StatefulWidget {
   const NeededList({super.key});
@@ -18,17 +17,35 @@ class _NeededListState extends State<NeededList> {
     return Scaffold(
       appBar: AppBar(title: const Text('نواقص')),
       body: _itemsList(),
-      floatingActionButton: FloatingActionButton(
-        child: const Icon(Icons.add),
-        onPressed: () {
-          Navigator.of(context)
-              .push(MaterialPageRoute(
-            builder: (context) => const AllItems(),
-          ))
-              .then((value) {
-            setState(() {});
-          });
-        },
+      floatingActionButton: Column(
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: [
+          Padding(
+            padding: const EdgeInsets.only(bottom: 18.0),
+            child: FloatingActionButton(
+              heroTag: 1,
+              child: const Icon(Icons.history_rounded),
+              onPressed: () {
+                Navigator.of(context).push(MaterialPageRoute(
+                  builder: (context) => const History(),
+                ));
+              },
+            ),
+          ),
+          FloatingActionButton(
+            heroTag: 0,
+            child: const Icon(Icons.add),
+            onPressed: () {
+              Navigator.of(context)
+                  .push(MaterialPageRoute(
+                builder: (context) => const AllItems(),
+              ))
+                  .then((value) {
+                setState(() {});
+              });
+            },
+          ),
+        ],
       ),
     );
   }
